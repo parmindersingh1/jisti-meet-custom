@@ -21,7 +21,8 @@ import {
     IconRaisedHand,
     IconRec,
     IconShareDesktop,
-    IconShareVideo
+    IconShareVideo,
+    IconInfo
 } from '../../../base/icons';
 import {
     getLocalParticipant,
@@ -85,6 +86,7 @@ import VideoSettingsButton from './VideoSettingsButton';
 import {
     ClosedCaptionButton
 } from '../../../subtitles';
+import { QrCode } from '../../../qr-code';
 
 /**
  * The type of the React {@code Component} props of {@link Toolbox}.
@@ -100,6 +102,9 @@ type Props = {
      * The {@code JitsiConference} for the current conference.
      */
     _conference: Object,
+
+
+    _participants: Object,
 
     /**
      * The tooltip key to use when screensharing is disabled. Or undefined
@@ -241,6 +246,7 @@ class Toolbox extends Component<Props, State> {
         this._onToolbarOpenFeedback = this._onToolbarOpenFeedback.bind(this);
         this._onToolbarOpenInvite = this._onToolbarOpenInvite.bind(this);
         this._onToolbarOpenKeyboardShortcuts = this._onToolbarOpenKeyboardShortcuts.bind(this);
+        this._onQrCodeClick = this._onQrCodeClick.bind(this);
         this._onToolbarOpenSpeakerStats = this._onToolbarOpenSpeakerStats.bind(this);
         this._onToolbarOpenVideoQuality = this._onToolbarOpenVideoQuality.bind(this);
         this._onToolbarToggleChat = this._onToolbarToggleChat.bind(this);
@@ -385,6 +391,18 @@ class Toolbox extends Component<Props, State> {
      */
     _doOpenKeyboardShorcuts() {
         this.props.dispatch(openKeyboardShortcutsDialog());
+    }
+
+     /**
+     * Dispatches an action to display {@code KeyboardShortcuts}.
+     *
+     * @private
+     * @returns {void}
+     */
+    _doOpenQrCode() {
+        console.log("props", this.props);
+        // this.props.dispatch(openQRCodeDialog());
+        this.props.dispatch(openDialog(QrCode));
     }
 
     /**
@@ -713,6 +731,21 @@ class Toolbox extends Component<Props, State> {
         this._doOpenKeyboardShorcuts();
     }
 
+    _onQrCodeClick: () => void;
+
+    /**
+     * Creates an analytics toolbar event and dispatches an action for opening
+     * the modal for showing available keyboard shortcuts.
+     *
+     * @private
+     * @returns {void}
+     */
+    _onQrCodeClick() {
+        //sendAnalytics(createToolbarEvent('shortcuts'));
+
+        this._doOpenQrCode();
+    }
+
     _onToolbarOpenSpeakerStats: () => void;
 
     /**
@@ -1039,7 +1072,19 @@ class Toolbox extends Component<Props, State> {
             this._shouldShowButton('help')
                 && <HelpButton
                     key = 'help'
-                    showLabel = { true } />
+                    showLabel = { true } />,
+            //    <OverflowMenuItem
+            //         accessibilityLabel = { t('toolbar.accessibilityLabel.uploads') }
+            //         icon = { IconInfo }
+            //         key = 'uploads'
+            //         onClick = { this._onToolbarOpenKeyboardShortcuts }
+            //         text = { t('toolbar.uploads') } />,
+               <OverflowMenuItem
+                    accessibilityLabel = { t('toolbar.accessibilityLabel.uploads') }
+                    icon = { IconFullScreen }
+                    key = 'qr_code'
+                    onClick = { this._onQrCodeClick }
+                    text = { t('QR CODE') } />
         ];
     }
 
@@ -1328,6 +1373,7 @@ class Toolbox extends Component<Props, State> {
  * @returns {{}}
  */
 function _mapStateToProps(state) {
+    const participants = state['features/base/participants'];
     const { conference } = state['features/base/conference'];
     let { desktopSharingEnabled } = state['features/base/conference'];
     const {
@@ -1372,6 +1418,7 @@ function _mapStateToProps(state) {
     return {
         _chatOpen: state['features/chat'].isOpen,
         _conference: conference,
+        _participants: participants,
         _desktopSharingEnabled: desktopSharingEnabled,
         _desktopSharingDisabledTooltipKey: desktopSharingDisabledTooltipKey,
         _dialog: Boolean(state['features/base/dialog'].component),
