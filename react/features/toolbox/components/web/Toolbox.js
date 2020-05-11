@@ -247,6 +247,7 @@ class Toolbox extends Component<Props, State> {
         this._onToolbarOpenInvite = this._onToolbarOpenInvite.bind(this);
         this._onToolbarOpenKeyboardShortcuts = this._onToolbarOpenKeyboardShortcuts.bind(this);
         this._onQrCodeClick = this._onQrCodeClick.bind(this);
+        this._doOpenDocumentsClick = this._doOpenDocumentsClick.bind(this);
         this._onToolbarOpenSpeakerStats = this._onToolbarOpenSpeakerStats.bind(this);
         this._onToolbarOpenVideoQuality = this._onToolbarOpenVideoQuality.bind(this);
         this._onToolbarToggleChat = this._onToolbarToggleChat.bind(this);
@@ -491,6 +492,17 @@ class Toolbox extends Component<Props, State> {
         if (this.props._desktopSharingEnabled) {
             this.props.dispatch(toggleScreensharing());
         }
+    }
+
+    /**
+     * Dispatches an action to toggle screensharing.
+     *
+     * @private
+     * @returns {void}
+     */
+    _doOpenDocumentsLink() {
+        const win = window.open('http://app.racloop.org', '_blank');
+        win.focus();
     }
 
     /**
@@ -744,6 +756,21 @@ class Toolbox extends Component<Props, State> {
         //sendAnalytics(createToolbarEvent('shortcuts'));
 
         this._doOpenQrCode();
+    }
+
+    _doOpenDocumentsClick: () => void;
+
+    /**
+     * Creates an analytics toolbar event and dispatches an action for opening
+     * the modal for showing available keyboard shortcuts.
+     *
+     * @private
+     * @returns {void}
+     */
+    _doOpenDocumentsClick() {
+        //sendAnalytics(createToolbarEvent('shortcuts'));
+
+        this._doOpenDocumentsLink();
     }
 
     _onToolbarOpenSpeakerStats: () => void;
@@ -1073,12 +1100,12 @@ class Toolbox extends Component<Props, State> {
                 && <HelpButton
                     key = 'help'
                     showLabel = { true } />,
-            //    <OverflowMenuItem
-            //         accessibilityLabel = { t('toolbar.accessibilityLabel.uploads') }
-            //         icon = { IconInfo }
-            //         key = 'uploads'
-            //         onClick = { this._onToolbarOpenKeyboardShortcuts }
-            //         text = { t('toolbar.uploads') } />,
+              <OverflowMenuItem
+                    accessibilityLabel = { t('toolbar.accessibilityLabel.documents') }
+                    icon = { IconInfo }
+                    key = 'uploads'
+                    onClick = { this._doOpenDocumentsClick }
+                    text = { t('Show Documents') } />,
                <OverflowMenuItem
                     accessibilityLabel = { t('toolbar.accessibilityLabel.uploads') }
                     icon = { IconFullScreen }
