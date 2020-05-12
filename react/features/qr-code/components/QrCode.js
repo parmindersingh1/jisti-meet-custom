@@ -79,10 +79,12 @@ class QrCode extends Component<Props, State> {
         let template = '';
 
         if (jwtUser && jwtUser.id) {
+            const url = `ordertick:${jwtUser.id}`;
+            console.log("jwtUser", jwtUser, url );
             template = (
                 <div className="qr-code" style={{ textAlign: 'center' }}>
                     <QRCode
-                        value={`ordertick:${jwtUser.id}`}
+                        value={url}
                         size={400}
                         includeMargin={true}
                     />
