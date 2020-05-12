@@ -20,6 +20,8 @@ type Props = {
      */
     _localDisplayName: string,
 
+    jwtUser: Object,
+
     /**
      * The JitsiConference from which stats will be pulled.
      */
@@ -51,7 +53,7 @@ class QrCode extends Component<Props, State> {
      *
      * @inheritdoc
      */
-    componentDidMount() {}
+    componentDidMount() { }
 
     /**
      * Stop polling for speaker stats updates.
@@ -59,7 +61,7 @@ class QrCode extends Component<Props, State> {
      * @inheritdoc
      * @returns {void}
      */
-    componentWillUnmount() {}
+    componentWillUnmount() { }
 
     /**
      * Implements React's {@link Component#render()}.
@@ -70,22 +72,59 @@ class QrCode extends Component<Props, State> {
     render() {
         // const userIds = Object.keys(this.state.stats);
         // const items = userIds.map(userId => this._createStatsItem(userId));
+        const { jwtUser } = this.props;
+
+        console.log("jwtUser", jwtUser);
+
+        let template = '';
+
+        if (jwtUser && jwtUser.id) {
+            template = (
+                <div className="qr-code" style={{ textAlign: 'center' }}>
+                    <QRCode
+                        value={`ordertick:${jwtUser.id}`}
+                        size={400}
+                        includeMargin={true}
+                    />
+                </div>
+            );
+        } else {
+            template = <h1 style={{ 'textAlign': 'center', color: "#ffffff" }}>Meeting ID not found</h1>;
+        }
+
+        // if (!jwtUser || !jwtUser.id) {
+        //     template = (<h1 className={{ 'textAlign': 'center' }}>Meeting ID not found</h1>);
+        // } else {
+        //     template = (
+        //         <div className="qr-code" style={{ textAlign: 'center' }}>
+        //             <QRCode
+        //                 value={`ordertick:${jwtUser.id}`}
+        //                 size={400}
+        //                 includeMargin={true}
+        //             />
+        //         </div>
+        //     );
+        // }
+
+        // return (
+
+        //     <Dialog
+        //         cancelKey={"dialog.close"}
+        //         submitDisabled={true}
+        //         titleKey="QR Code"
+        //     >
+        //         {template}
+        //     </Dialog>
+        // );
 
         return (
+
             <Dialog
                 cancelKey={"dialog.close"}
                 submitDisabled={true}
                 titleKey="QR Code"
             >
-                <div className="qr-code" style={{ textAlign: 'center' }}>
-                <QRCode
-                    id="123456"
-                    value="123456"
-                    size={400}
-                    level={"H"}
-                    includeMargin={true}
-                />
-                </div>
+                {template}
             </Dialog>
         );
     }
@@ -105,6 +144,8 @@ class QrCode extends Component<Props, State> {
 function _mapStateToProps(state) {
     const localParticipant = getLocalParticipant(state);
 
+    const jwtUser = state['features/base/jwt'].isGuest ? undefined : state['features/base/jwt'].user;
+
     console.log("localParticipant", localParticipant);
 
     return {
@@ -115,6 +156,8 @@ function _mapStateToProps(state) {
          * @type {string|undefined}
          */
         _localDisplayName: localParticipant && localParticipant.name,
+
+        jwtUser,
 
         participant: localParticipant,
     };
